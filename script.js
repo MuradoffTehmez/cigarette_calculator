@@ -16,15 +16,9 @@ if (localStorage.getItem('darkMode') === 'enabled') {
 const form = document.querySelector('form');
 const resultsContainer = document.querySelector('#results');
 const chartContainer = document.querySelector('#chart-container');
-const totalSpentElement = document.querySelector('#total-spent');
 const socialShare = document.querySelector('#social-share');
 
-// Sosial media paylaşımı üçün şablon mesaj
-function generateSocialMessage(totalSpent, daysSmoking, packsSmoked) {
-    return `Mən ${daysSmoking} gün ərzində ${packsSmoked} paket siqaret çəkdim və bu müddət ərzində ${totalSpent.toFixed(2)} AZN xərclədim. Gəlin, siqareti tərgidək və sağlam həyat üçün bir addım ataq! 🚭`;
-}
-
-// Formu göndərmə funksiyası
+// Hesablamaları aparmaq və nəticələri göstərmək üçün əsas funksiya
 form.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -46,22 +40,29 @@ form.addEventListener('submit', (e) => {
 
     // Nəticələri göstər
     resultsContainer.innerHTML = `
-        <p><strong>Ümumi siqaret çəkilən günlər:</strong> ${daysSmoking}</p>
-        <p><strong>Ümumi çəkilən siqaretlər:</strong> ${cigarettesSmoked.toFixed(0)} (Ədədlə)</p>
-        <p><strong>Ümumi paket miqdarı:</strong> ${packsSmoked.toFixed(1)}</p>
+        <p><strong>Ümumi siqaret çəkilən günlər:</strong> ${daysSmoking} gün</p>
+        <p><strong>Ümumi çəkilən siqaretlər:</strong> ${cigarettesSmoked.toFixed(0)} ədəd</p>
+        <p><strong>Ümumi paket miqdarı:</strong> ${packsSmoked.toFixed(1)} paket</p>
         <p><strong>Xərclənən ümumi məbləğ:</strong> ${totalSpent.toFixed(2)} AZN</p>
     `;
 
     // Sosial paylaşım düymələrini yenilə
-    socialShare.innerHTML = `
-        <button class="btn btn-facebook" onclick="shareOnFacebook('${generateSocialMessage(totalSpent, daysSmoking, packsSmoked)}')">Facebook</button>
-        <button class="btn btn-twitter" onclick="shareOnTwitter('${generateSocialMessage(totalSpent, daysSmoking, packsSmoked)}')">X</button>
-        <button class="btn btn-whatsapp" onclick="shareOnWhatsApp('${generateSocialMessage(totalSpent, daysSmoking, packsSmoked)}')">WhatsApp</button>
-    `;
+    updateSocialShare(totalSpent, daysSmoking, packsSmoked);
 
     // Qrafikləri yenilə
     updateChart(daysSmoking, packsSmoked, totalSpent);
 });
+
+// Sosial media paylaşımı düymələrini yenilə
+function updateSocialShare(totalSpent, daysSmoking, packsSmoked) {
+    const message = `Mən ${daysSmoking} gün ərzində ${packsSmoked.toFixed(1)} paket siqaret çəkdim və bu müddət ərzində ${totalSpent.toFixed(2)} AZN xərclədim. Siz də sağlam həyat üçün bir addım ata bilərsiniz! 🚭`;
+
+    socialShare.innerHTML = `
+        <button class="btn btn-facebook" onclick="shareOnFacebook('${message}')">Facebook</button>
+        <button class="btn btn-twitter" onclick="shareOnTwitter('${message}')">X</button>
+        <button class="btn btn-whatsapp" onclick="shareOnWhatsApp('${message}')">WhatsApp</button>
+    `;
+}
 
 // Sosial media paylaşım funksiyaları
 function shareOnFacebook(message) {
@@ -87,11 +88,12 @@ function updateChart(daysSmoking, packsSmoked, totalSpent) {
     window.myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Günlər', 'Paketlər', 'Məbləğ (AZN)'],
+            labels: ['Siqaret çəkilən günlər', 'Çəkilən paketlər', 'Xərclənən məbləğ (AZN)'],
             datasets: [{
-                label: 'Nəticələr',
+                label: 'Hesablamalar',
                 data: [daysSmoking, packsSmoked, totalSpent],
-                backgroundColor: ['#0056b3', '#ffdd57', '#25d366']
+                backgroundColor: ['#007BFF', '#FFC107', '#28A745'],
+                borderWidth: 1
             }]
         },
         options: {
@@ -102,10 +104,15 @@ function updateChart(daysSmoking, packsSmoked, totalSpent) {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return context.raw.toFixed(2);
                         }
                     }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
         }
