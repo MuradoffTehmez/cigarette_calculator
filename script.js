@@ -1,65 +1,113 @@
-// Dark Mode funksiyası
-document.getElementById("darkModeToggle").addEventListener("click", function() {
-    document.body.classList.toggle("dark-mode");
+// Dark mode düyməsi və vəziyyəti
+const darkModeToggle = document.querySelector('.dark-mode-btn');
+const body = document.body;
+
+darkModeToggle.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
 });
 
-// Hesablama funksiyası
-function calculate() {
-    let startDate = new Date(document.getElementById('startDate').value);
-    let cigarettePrice = parseFloat(document.getElementById('cigarettePrice').value);
-    let cigarettesPerDay = parseInt(document.getElementById('cigarettesPerDay').value);
-    let goal = parseFloat(document.getElementById('goal').value);
+// Dark mode vəziyyətini yadda saxla
+if (localStorage.getItem('darkMode') === 'enabled') {
+    body.classList.add('dark-mode');
+}
 
-    let today = new Date();
-    let daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+// Form elementləri
+const form = document.querySelector('form');
+const resultsContainer = document.querySelector('#results');
+const chartContainer = document.querySelector('#chart-container');
+const totalSpentElement = document.querySelector('#total-spent');
+const socialShare = document.querySelector('#social-share');
 
-    // Hesablama
-    let totalCigarettes = cigarettesPerDay * daysSinceStart;
-    let totalCost = totalCigarettes * cigarettePrice;
-    let monthlyCost = totalCost / (daysSinceStart / 30);
-    let yearlyCost = totalCost / (daysSinceStart / 365);
+// Sosial media paylaşımı üçün şablon mesaj
+function generateSocialMessage(totalSpent, daysSmoking, packsSmoked) {
+    return `Mən ${daysSmoking} gün ərzində ${packsSmoked} paket siqaret çəkdim və bu müddət ərzində ${totalSpent.toFixed(2)} AZN xərclədim. Gəlin, siqareti tərgidək və sağlam həyat üçün bir addım ataq! 🚭`;
+}
 
-    // Nəticələri göstərmək
-    document.getElementById('totalCigarettes').innerText = totalCigarettes;
-    document.getElementById('totalCost').innerText = totalCost.toFixed(2) + " AZN";
-    document.getElementById('monthlyCost').innerText = monthlyCost.toFixed(2) + " AZN";
-    document.getElementById('yearlyCost').innerText = yearlyCost.toFixed(2) + " AZN";
+// Formu göndərmə funksiyası
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // Dəyərləri əldə et
+    const pricePerPack = parseFloat(document.querySelector('#pricePerPack').value);
+    const cigarettesPerDay = parseInt(document.querySelector('#cigarettesPerDay').value);
+    const startDate = new Date(document.querySelector('#startDate').value);
+
+    // Günü hesablama
+    const today = new Date();
+    const daysSmoking = Math.ceil((today - startDate) / (1000 * 60 * 60 * 24));
+
+    // Paket və ümumi siqaret miqdarı
+    const cigarettesSmoked = daysSmoking * cigarettesPerDay;
+    const packsSmoked = cigarettesSmoked / 20;
+
+    // Ümumi xərc
+    const totalSpent = packsSmoked * pricePerPack;
+
+    // Nəticələri göstər
+    resultsContainer.innerHTML = `
+        <p><strong>Ümumi siqaret çəkilən günlər:</strong> ${daysSmoking}</p>
+        <p><strong>Ümumi çəkilən siqaretlər:</strong> ${cigarettesSmoked.toFixed(0)} (Ədədlə)</p>
+        <p><strong>Ümumi paket miqdarı:</strong> ${packsSmoked.toFixed(1)}</p>
+        <p><strong>Xərclənən ümumi məbləğ:</strong> ${totalSpent.toFixed(2)} AZN</p>
+    `;
+
+    // Sosial paylaşım düymələrini yenilə
+    socialShare.innerHTML = `
+        <button class="btn btn-facebook" onclick="shareOnFacebook('${generateSocialMessage(totalSpent, daysSmoking, packsSmoked)}')">Facebook</button>
+        <button class="btn btn-twitter" onclick="shareOnTwitter('${generateSocialMessage(totalSpent, daysSmoking, packsSmoked)}')">X</button>
+        <button class="btn btn-whatsapp" onclick="shareOnWhatsApp('${generateSocialMessage(totalSpent, daysSmoking, packsSmoked)}')">WhatsApp</button>
+    `;
 
     // Qrafikləri yenilə
-    updateCharts(totalCigarettes, totalCost);
+    updateChart(daysSmoking, packsSmoked, totalSpent);
+});
+
+// Sosial media paylaşım funksiyaları
+function shareOnFacebook(message) {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
 }
 
-// Qrafikləri yeniləmək üçün
-function updateCharts(totalCigarettes, totalCost) {
-    let ctx1 = document.getElementById('cigaretteChart').getContext('2d');
-    new Chart(ctx1, {
+function shareOnTwitter(message) {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
+
+function shareOnWhatsApp(message) {
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
+
+// Qrafikləri yeniləmə funksiyası (Chart.js istifadə olunur)
+function updateChart(daysSmoking, packsSmoked, totalSpent) {
+    const ctx = document.getElementById('chart').getContext('2d');
+    if (window.myChart) window.myChart.destroy(); // Əvvəlki qrafiki məhv et
+
+    window.myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Çəkilən Siqaretlər'],
+            labels: ['Günlər', 'Paketlər', 'Məbləğ (AZN)'],
             datasets: [{
-                label: 'Siqaretlər',
-                data: [totalCigarettes],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                label: 'Nəticələr',
+                data: [daysSmoking, packsSmoked, totalSpent],
+                backgroundColor: ['#0056b3', '#ffdd57', '#25d366']
             }]
         },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.raw.toFixed(2);
+                        }
+                    }
+                }
+            }
+        }
     });
-
-    let ctx2 = document.getElementById('expenseChart').getContext('2d');
-    new Chart(ctx2, {
-        type: 'pie',
-        data: {
-            labels: ['Toplam Xərc'],
-            datasets: [{
-                data: [totalCost, goal],
-                backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
-            }]
-        },
-    });
-}
-
-// Sosial Media Paylaşımı
-function shareResults() {
-    let message = `Mən bu günə qədər ${document.getElementById('totalCost').innerText} xərcləmişəm! Siqaret çəkməkdən qazancım bu ola bilərdi!`;
-    let url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
 }
