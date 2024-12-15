@@ -13,8 +13,8 @@ if (localStorage.getItem('darkMode') === 'enabled') {
 }
 
 // Form elementləri
-const form = document.querySelector('form');
-const resultsContainer = document.querySelector('#results');
+const form = document.querySelector('#cigarette-form');
+const resultsBody = document.querySelector('#results-body');
 const chartContainer = document.querySelector('#chart-container');
 const socialShare = document.querySelector('#social-share');
 
@@ -23,9 +23,9 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     // Dəyərləri əldə et
-    const pricePerPack = parseFloat(document.querySelector('#pricePerPack').value);
-    const cigarettesPerDay = parseInt(document.querySelector('#cigarettesPerDay').value);
-    const startDate = new Date(document.querySelector('#startDate').value);
+    const pricePerPack = parseFloat(document.querySelector('#price-per-pack').value);
+    const cigarettesPerDay = parseInt(document.querySelector('#cigarettes-per-day').value);
+    const startDate = new Date(document.querySelector('#start-date').value);
 
     // Günü hesablama
     const today = new Date();
@@ -39,11 +39,11 @@ form.addEventListener('submit', (e) => {
     const totalSpent = packsSmoked * pricePerPack;
 
     // Nəticələri göstər
-    resultsContainer.innerHTML = `
-        <p><strong>Ümumi siqaret çəkilən günlər:</strong> ${daysSmoking} gün</p>
-        <p><strong>Ümumi çəkilən siqaretlər:</strong> ${cigarettesSmoked.toFixed(0)} ədəd</p>
-        <p><strong>Ümumi paket miqdarı:</strong> ${packsSmoked.toFixed(1)} paket</p>
-        <p><strong>Xərclənən ümumi məbləğ:</strong> ${totalSpent.toFixed(2)} AZN</p>
+    resultsBody.innerHTML = `
+        <tr><td>Ümumi siqaret çəkilən günlər</td><td>${daysSmoking}</td></tr>
+        <tr><td>Ümumi çəkilən siqaretlər</td><td>${cigarettesSmoked.toFixed(0)} ədəd</td></tr>
+        <tr><td>Ümumi paket miqdarı</td><td>${packsSmoked.toFixed(1)} paket</td></tr>
+        <tr><td>Xərclənən ümumi məbləğ</td><td>${totalSpent.toFixed(2)} AZN</td></tr>
     `;
 
     // Sosial paylaşım düymələrini yenilə
@@ -82,7 +82,7 @@ function shareOnWhatsApp(message) {
 
 // Qrafikləri yeniləmə funksiyası (Chart.js istifadə olunur)
 function updateChart(daysSmoking, packsSmoked, totalSpent) {
-    const ctx = document.getElementById('chart').getContext('2d');
+    const ctx = document.getElementById('stats-chart').getContext('2d');
     if (window.myChart) window.myChart.destroy(); // Əvvəlki qrafiki məhv et
 
     window.myChart = new Chart(ctx, {
