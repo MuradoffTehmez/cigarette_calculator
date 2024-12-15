@@ -1,270 +1,91 @@
 <!DOCTYPE html>
 <html lang="az">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Sayt - Əlavə Funksiyalar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Ümumi stil */
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        
-        header {
-            background-color: #3498db;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-
-        header h1 {
-            opacity: 0;
-            animation: fadeIn 1s forwards;
-        }
-
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
-        /* Yükləmə ekranı */
-        .preloader {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Yüksək kontrast rejimi */
-        .high-contrast-mode {
-            background-color: #000;
-            color: #fff;
-        }
-
-        /* Kartlar */
-        .card {
-            width: 300px;
-            background-color: #fff;
-            padding: 20px;
-            margin: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        .card:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Sosial media düymələri */
-        .social-buttons {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        .social-buttons a {
-            margin: 0 10px;
-            text-decoration: none;
-            background-color: #3b5998;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .social-buttons a:hover {
-            background-color: #2980b9;
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 120px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 5px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -60px;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-        }
-
-        /* Cədvəl */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #3498db;
-            color: white;
-        }
-
-        /* Preloader */
-        .preloader {
-            display: none;
-        }
-
-    </style>
+    <title>Siqaret Xərcləri Hesablama Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
-
-    <!-- Yükləmə ekranı -->
-    <div class="preloader"></div>
-
-    <!-- Başlıq -->
     <header>
-        <h1>Web Saytınız</h1>
+        <button id="dark-mode-toggle" class="dark-mode-btn">🌙</button>
+        <h1>Siqaret Xərcləri Hesablama Sistemi</h1>
     </header>
 
-    <!-- Sosial Media Paylaşım -->
-    <div class="social-buttons">
-        <a href="https://www.facebook.com/sharer/sharer.php?u=<URL>" target="_blank" class="tooltip">
-            Facebook-da Paylaş
-            <span class="tooltiptext">Facebook ilə paylaş</span>
-        </a>
-        <a href="https://twitter.com/intent/tweet?text=<URL>" target="_blank" class="tooltip">
-            Twitter-da Paylaş
-            <span class="tooltiptext">Twitter ilə paylaş</span>
-        </a>
-        <a href="https://api.whatsapp.com/send?text=<URL>" target="_blank" class="tooltip">
-            WhatsApp ilə Paylaş
-            <span class="tooltiptext">WhatsApp ilə paylaş</span>
-        </a>
-    </div>
+    <main>
+        <!-- Proqram haqqında məlumat -->
+        <section id="intro">
+            <div class="card">
+                <h4>Proqram Haqqında</h4>
+                <p>
+                    Bu proqram sizə siqaretin iqtisadi və sağlamlıq baxımından təsirlərini hesablamaq üçün nəzərdə
+                    tutulub.
+                    Siqaretlə bağlı şəxsi statistikanızı asanlıqla izləyə və sosial mediada paylaşa bilərsiniz.
+                </p>
+                <p><strong>Müəllif:</strong> Təhməz Muradov</p>
+            </div>
+        </section>
 
-    <!-- Cədvəl -->
-    <table id="myTable">
-        <thead>
-            <tr>
-                <th onclick="sortTable(0)">Ad</th>
-                <th onclick="sortTable(1)">Yaş</th>
-                <th onclick="sortTable(2)">Şəhər</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Ali</td>
-                <td>25</td>
-                <td>Bakı</td>
-            </tr>
-            <tr>
-                <td>Veli</td>
-                <td>30</td>
-                <td>Gəncə</td>
-            </tr>
-            <tr>
-                <td>Esra</td>
-                <td>22</td>
-                <td>Şəki</td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- Siqaret Xərcləri Hesablama Formu -->
+        <section id="form-section">
+            <div class="card">
+                <form id="cigarette-form">
+                    <div>
+                        <label for="first-cigarette-date">Siqaret çəkməyə nə vaxt başlamısınız?</label>
+                        <input type="date" id="first-cigarette-date" class="form-control" required>
+                    </div>
+                    <div>
+                        <label for="daily-amount">Gündəlik çəkilən siqaret sayı (ədəd):</label>
+                        <input type="number" id="daily-amount" class="form-control" min="1" required>
+                    </div>
+                    <div>
+                        <label for="pack-price">Bir paçkanın qiyməti (AZN):</label>
+                        <input type="number" step="0.01" id="pack-price" class="form-control" min="0.01" required>
+                    </div>
+                    <div>
+                        <label for="health-risk">Bir siqaretin sağlamlığa təsiri (dəqiqə):</label>
+                        <input type="number" id="health-risk" class="form-control" min="0" step="1" value="11">
+                    </div>
+                    <button type="submit" id="calculate-btn">Hesabla</button>
+                </form>
+            </div>
+        </section>
 
-    <!-- Yüksək kontrast rejimi düyməsi -->
-    <button onclick="toggleHighContrast()">Yüksək Kontrast Rejim</button>
+        <!-- Nəticələr Bölməsi -->
+        <section id="results">
+            <div class="card">
+                <h4>Nəticələr</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Statistika</th>
+                            <th>Dəyər</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+                <div id="chart-container">
+                    <canvas id="stats-chart"></canvas>
+                </div>
+            </div>
+        </section>
 
-    <!-- Kartlar -->
-    <div class="card">
-        <h2>Kart 1</h2>
-        <p>Bu kartda məlumat var.</p>
-    </div>
-    <div class="card">
-        <h2>Kart 2</h2>
-        <p>Bu kartda digər məlumat var.</p>
-    </div>
+        <!-- Sosial Media Paylaşım Bölməsi -->
+        <section id="social-share">
+            <div class="card">
+                <h4>Nəticələri Paylaş</h4>
+                <p>Sosial mediada paylaşmaq üçün seçim edin:</p>
+                <button class="btn btn-facebook">Facebook</button>
+                <button class="btn btn-twitter">X</button>
+                <button class="btn btn-whatsapp">WhatsApp</button>
+            </div>
+        </section>
+    </main>
 
-    <script>
-        // Cədvəlin sıralanması
-        function sortTable(n) {
-            let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-            table = document.getElementById("myTable");
-            switching = true;
-            dir = "asc"; 
-            while (switching) {
-                switching = false;
-                rows = table.rows;
-                for (i = 1; i < (rows.length - 1); i++) {
-                    shouldSwitch = false;
-                    x = rows[i].getElementsByTagName("TD")[n];
-                    y = rows[i + 1].getElementsByTagName("TD")[n];
-                    if (dir == "asc") {
-                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else if (dir == "desc") {
-                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    }
-                }
-                if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                    switchcount++;
-                } else {
-                    if (switchcount == 0 && dir == "asc") {
-                        dir = "desc";
-                        switching = true;
-                    }
-                }
-            }
-        }
-
-        // Yüksək kontrast rejimi aktivasiya
-        function toggleHighContrast() {
-            document.body.classList.toggle('high-contrast-mode');
-        }
-
-        // Preloaderin gizlədilməsi
-        window.addEventListener("load", function() {
-            document.querySelector('.preloader').style.display = 'none';
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
