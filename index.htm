@@ -16,45 +16,37 @@
     </header>
 
     <main>
-        <!-- Proqram haqqında məlumat -->
         <section id="intro">
             <div class="card">
                 <h4>Proqram Haqqında</h4>
                 <p>
                     Bu proqram sizə siqaretin iqtisadi və sağlamlıq baxımından təsirlərini hesablamaq üçün nəzərdə
-                    tutulub.
-                    Siqaretlə bağlı şəxsi statistikanızı asanlıqla izləyə və sosial mediada paylaşa bilərsiniz.
+                    tutulub. Siqaretlə bağlı şəxsi statistikanızı asanlıqla izləyə və sosial mediada paylaşa bilərsiniz.
                 </p>
                 <p><strong>Müəllif:</strong> Təhməz Muradov</p>
             </div>
         </section>
 
-        <!-- Siqaret Xərcləri Hesablama Formu -->
         <section id="form-section">
             <div class="card">
                 <form id="cigarette-form">
                     <div>
-                        <label for="first-cigarette-date">Siqaret çəkməyə nə vaxt başlamısınız?</label>
-                        <input type="date" id="first-cigarette-date" class="form-control" required>
+                        <label for="start-date">Siqaret çəkməyə nə vaxt başlamısınız?</label>
+                        <input type="date" id="start-date" class="form-control" required>
                     </div>
                     <div>
-                        <label for="daily-amount">Gündəlik çəkilən siqaret sayı (ədəd):</label>
-                        <input type="number" id="daily-amount" class="form-control" min="1" required>
+                        <label for="cigarettes-per-day">Gündəlik çəkilən siqaret sayı (ədəd):</label>
+                        <input type="number" id="cigarettes-per-day" class="form-control" min="1" required>
                     </div>
                     <div>
-                        <label for="pack-price">Bir paçkanın qiyməti (AZN):</label>
-                        <input type="number" step="0.01" id="pack-price" class="form-control" min="0.01" required>
-                    </div>
-                    <div>
-                        <label for="health-risk">Bir siqaretin sağlamlığa təsiri (dəqiqə):</label>
-                        <input type="number" id="health-risk" class="form-control" min="0" step="1" value="11">
+                        <label for="price-per-pack">Bir paçkanın qiyməti (AZN):</label>
+                        <input type="number" step="0.01" id="price-per-pack" class="form-control" min="0.01" required>
                     </div>
                     <button type="submit" id="calculate-btn">Hesabla</button>
                 </form>
             </div>
         </section>
 
-        <!-- Nəticələr Bölməsi -->
         <section id="results">
             <div class="card">
                 <h4>Nəticələr</h4>
@@ -73,7 +65,6 @@
             </div>
         </section>
 
-        <!-- Sosial Media Paylaşım Bölməsi -->
         <section id="social-share">
             <div class="card">
                 <h4>Nəticələri Paylaş</h4>
@@ -85,91 +76,7 @@
         </section>
     </main>
 
-    <script>
-        // Dark Mode funksiyası
-        document.getElementById('dark-mode-toggle').addEventListener('click', function () {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                this.textContent = '🌕'; // Qaranlıq rejim açıqdır
-            } else {
-                this.textContent = '🌙'; // Qaranlıq rejim bağlanıb
-            }
-        });
-
-        // Siqaret xərclərinin hesablanması
-        document.getElementById('cigarette-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            // Formdan verilən məlumatları almaq
-            const firstCigaretteDate = new Date(document.getElementById('first-cigarette-date').value);
-            const dailyAmount = Number(document.getElementById('daily-amount').value);
-            const packPrice = Number(document.getElementById('pack-price').value);
-            const healthRisk = Number(document.getElementById('health-risk').value);
-
-            // İndiki tarix
-            const currentDate = new Date();
-            const yearsSmoking = (currentDate - firstCigaretteDate) / (1000 * 3600 * 24 * 365);
-
-            // Siqaret xərclərini hesablamaq
-            const totalCigarettesPerYear = dailyAmount * 365;
-            const yearlyCost = totalCigarettesPerYear * (packPrice / 20); // Bir paketin içində 20 siqaret
-            const totalCost = yearlyCost * yearsSmoking;
-
-            // Sağlamlıq riskini hesablamaq
-            const totalHealthRisk = dailyAmount * healthRisk * 365 * yearsSmoking;
-
-            // Nəticələri göstərmək
-            const resultsBody = document.getElementById('results-body');
-            resultsBody.innerHTML = `
-                <tr><td>Keçirilmiş illər</td><td>${yearsSmoking.toFixed(2)} il</td></tr>
-                <tr><td>Ümumi xərclər (AZN)</td><td>${totalCost.toFixed(2)} AZN</td></tr>
-                <tr><td>Sağlamlıq riski (dəqiqə)</td><td>${totalHealthRisk.toFixed(2)} dəqiqə</td></tr>
-            `;
-
-            // Qrafik üçün məlumat hazırlamaq
-            const ctx = document.getElementById('stats-chart').getContext('2d');
-            const chartData = {
-                labels: ['Xərclər (AZN)', 'Sağlamlıq Riski (dəqiqə)'],
-                datasets: [{
-                    label: 'Siqaret Xərcləri və Sağlamlıq Riski',
-                    data: [totalCost, totalHealthRisk],
-                    backgroundColor: ['#3498db', '#e74c3c'],
-                    borderColor: ['#2980b9', '#c0392b'],
-                    borderWidth: 1
-                }]
-            };
-
-            // Qrafik yaratmaq
-            new Chart(ctx, {
-                type: 'bar',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        });
-
-        // Sosial Media Paylaşım funksiyaları
-        document.querySelector('.btn-facebook').addEventListener('click', function () {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-        });
-
-        document.querySelector('.btn-twitter').addEventListener('click', function () {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank');
-        });
-
-        document.querySelector('.btn-whatsapp').addEventListener('click', function () {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://api.whatsapp.com/send?text=${url}`, '_blank');
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
