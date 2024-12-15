@@ -7,13 +7,23 @@ document.getElementById("calcForm").addEventListener("submit", function (event) 
   const gunlukSiqaret = parseFloat(document.getElementById("gunlukSiqaret").value);
   const siqaretQiymeti = parseFloat(document.getElementById("siqaretQiymeti").value);
   const aylıqGelir = parseFloat(document.getElementById("ayliqGelir").value);
+  const ilkSiqaretTarixi = new Date(document.getElementById("ilkSiqaretTarixi").value);
 
-  if (isNaN(gunlukSiqaret) || isNaN(siqaretQiymeti)) {
+  if (isNaN(gunlukSiqaret) || isNaN(siqaretQiymeti) || isNaN(ilkSiqaretTarixi.getTime())) {
     alert("Zəhmət olmasa bütün sahələri düzgün doldurun.");
     return;
   }
 
-  // Günlük və aylıq xərcləri hesabla
+  // İlk siqaretdən bu günə qədər keçən günlərin sayı
+  const bugun = new Date();
+  const kecenGunler = Math.ceil((bugun - ilkSiqaretTarixi) / (1000 * 60 * 60 * 24));
+
+  // Keçmişdə çəkilən siqaretlərin sayı və xərci
+  const toplamSiqaret = gunlukSiqaret * kecenGunler;
+  const toplamPaçka = toplamSiqaret / 20; // 1 qutuda 20 siqaret var
+  const toplamXerc = toplamPaçka * siqaretQiymeti;
+
+  // Günlük, aylıq və illik xərclər
   const gunlukXerc = (gunlukSiqaret / 20) * siqaretQiymeti;
   const aylıqXerc = gunlukXerc * 30;
   const illikXerc = aylıqXerc * 12;
@@ -30,8 +40,15 @@ document.getElementById("calcForm").addEventListener("submit", function (event) 
     Gündəlik xərclər: ${gunlukXerc.toFixed(2)} AZN.
     Aylıq xərclər: ${aylıqXerc.toFixed(2)} AZN.
     İllik xərclər: ${illikXerc.toFixed(2)} AZN.${gelirFaiz}
+    <br><br>
+    İlk siqaret çəkdiyiniz tarixdən indiyə qədər:
+    <ul>
+      <li>Çəkilən siqaretlər: ${toplamSiqaret.toFixed(0)} ədəd</li>
+      <li>Qutular: ${toplamPaçka.toFixed(2)} qutu</li>
+      <li>Xərc: ${toplamXerc.toFixed(2)} AZN</li>
+    </ul>
   `;
-  document.getElementById("umumiXerc").textContent = umumiXercText;
+  document.getElementById("umumiXerc").innerHTML = umumiXercText;
 
   // Keçmiş nəticələri yadda saxla
   const kecmisXerc = JSON.parse(localStorage.getItem("kecmisXerc")) || [];
