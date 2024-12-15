@@ -4,57 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siqaret Xərc Hesablama</title>
+    <title>Siqaret Xərcləri Hesablama</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>Siqaret Xərc Hesablama</h1>
-            <button id="darkModeToggle">Dark Mode</button>
+    <div class="container mt-5">
+        <header class="text-center mb-4">
+            <h1 class="display-4">Siqaret Xərcləri Hesablama</h1>
+            <button id="darkModeToggle" class="btn btn-dark">Dark Mode</button>
         </header>
 
-        <div class="input-section">
-            <label for="startDate">İlk Siqaretin Tarixi:</label>
-            <input type="date" id="startDate" required>
-
-            <label for="cigarettePrice">Bir Siqaretin Qiyməti:</label>
-            <input type="number" id="cigarettePrice" placeholder="Siqaretin qiyməti" required>
-
-            <label for="cigarettesPerDay">Gündəlik Çəkilən Siqaret Sayı:</label>
-            <input type="number" id="cigarettesPerDay" placeholder="Gündəlik siqaret sayı" required>
-
-            <label for="goal">Aylıq Xərc Hədəfi:</label>
-            <input type="number" id="goal" placeholder="Aylıq qənaət hədəfi" required>
-
-            <button onclick="calculate()">Hesabla</button>
+        <div class="card p-4 mb-4">
+            <h4>Hesablama Formu</h4>
+            <form id="calcForm">
+                <div class="mb-3">
+                    <label for="startDate" class="form-label">İlk Siqaretin Tarixi:</label>
+                    <input type="date" id="startDate" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="cigarettePrice" class="form-label">Bir Siqaretin Qiyməti (AZN):</label>
+                    <input type="number" id="cigarettePrice" class="form-control" placeholder="0.10" required>
+                </div>
+                <div class="mb-3">
+                    <label for="cigarettesPerDay" class="form-label">Gündəlik Siqaret Sayı:</label>
+                    <input type="number" id="cigarettesPerDay" class="form-control" placeholder="10" required>
+                </div>
+                <div class="mb-3">
+                    <label for="goal" class="form-label">Aylıq Xərc Hədəfi (AZN):</label>
+                    <input type="number" id="goal" class="form-control" placeholder="50" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="calculate()">Hesabla</button>
+            </form>
         </div>
 
-        <div class="results">
-            <div class="result-box">
-                <h3>Cəmi Çəkilən Siqaretlər: <span id="totalCigarettes">0</span></h3>
-                <h3>Toplam Xərc: <span id="totalCost">0 AZN</span></h3>
+        <div class="card p-4 mb-4">
+            <h4>Nəticələr</h4>
+            <p><strong>Cəmi Çəkilən Siqaretlər:</strong> <span id="totalCigarettes">0</span> ədəd</p>
+            <p><strong>Toplam Xərc:</strong> <span id="totalCost">0</span> AZN</p>
+            <p><strong>Aylıq Xərc:</strong> <span id="monthlyCost">0</span> AZN</p>
+            <p><strong>İllik Xərc:</strong> <span id="yearlyCost">0</span> AZN</p>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <canvas id="cigaretteChart"></canvas>
             </div>
-            <div class="result-box">
-                <h3>Aylıq Xərc: <span id="monthlyCost">0 AZN</span></h3>
-                <h3>İllik Xərc: <span id="yearlyCost">0 AZN</span></h3>
+            <div class="col-md-6">
+                <canvas id="expenseChart"></canvas>
             </div>
         </div>
 
-        <div class="charts">
-            <canvas id="cigaretteChart"></canvas>
-            <canvas id="expenseChart"></canvas>
-        </div>
-
-        <div class="tips">
-            <h2>Təkliflər</h2>
-            <p id="tips">Siqaret çəkmək sağlamlığa və iqtisadi vəziyyətə ziyan vurur.</p>
-        </div>
-
-        <div class="social-share">
-            <button onclick="shareResults()">Sosial Mediada Paylaş</button>
+        <div class="card p-4">
+            <h4>Təkliflər</h4>
+            <p id="tips">Siqareti tərgitmək həm sağlamlığınıza, həm də maliyyə vəziyyətinizə müsbət təsir göstərə bilər.
+            </p>
+            <button class="btn btn-success" onclick="shareResults()">Sosial Mediada Paylaş</button>
         </div>
     </div>
 
