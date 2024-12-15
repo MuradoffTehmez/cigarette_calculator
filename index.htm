@@ -85,7 +85,91 @@
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script>
+        // Dark Mode funksiyası
+        document.getElementById('dark-mode-toggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                this.textContent = '🌕'; // Qaranlıq rejim açıqdır
+            } else {
+                this.textContent = '🌙'; // Qaranlıq rejim bağlanıb
+            }
+        });
+
+        // Siqaret xərclərinin hesablanması
+        document.getElementById('cigarette-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Formdan verilən məlumatları almaq
+            const firstCigaretteDate = new Date(document.getElementById('first-cigarette-date').value);
+            const dailyAmount = Number(document.getElementById('daily-amount').value);
+            const packPrice = Number(document.getElementById('pack-price').value);
+            const healthRisk = Number(document.getElementById('health-risk').value);
+
+            // İndiki tarix
+            const currentDate = new Date();
+            const yearsSmoking = (currentDate - firstCigaretteDate) / (1000 * 3600 * 24 * 365);
+
+            // Siqaret xərclərini hesablamaq
+            const totalCigarettesPerYear = dailyAmount * 365;
+            const yearlyCost = totalCigarettesPerYear * (packPrice / 20); // Bir paketin içində 20 siqaret
+            const totalCost = yearlyCost * yearsSmoking;
+
+            // Sağlamlıq riskini hesablamaq
+            const totalHealthRisk = dailyAmount * healthRisk * 365 * yearsSmoking;
+
+            // Nəticələri göstərmək
+            const resultsBody = document.getElementById('results-body');
+            resultsBody.innerHTML = `
+                <tr><td>Keçirilmiş illər</td><td>${yearsSmoking.toFixed(2)} il</td></tr>
+                <tr><td>Ümumi xərclər (AZN)</td><td>${totalCost.toFixed(2)} AZN</td></tr>
+                <tr><td>Sağlamlıq riski (dəqiqə)</td><td>${totalHealthRisk.toFixed(2)} dəqiqə</td></tr>
+            `;
+
+            // Qrafik üçün məlumat hazırlamaq
+            const ctx = document.getElementById('stats-chart').getContext('2d');
+            const chartData = {
+                labels: ['Xərclər (AZN)', 'Sağlamlıq Riski (dəqiqə)'],
+                datasets: [{
+                    label: 'Siqaret Xərcləri və Sağlamlıq Riski',
+                    data: [totalCost, totalHealthRisk],
+                    backgroundColor: ['#3498db', '#e74c3c'],
+                    borderColor: ['#2980b9', '#c0392b'],
+                    borderWidth: 1
+                }]
+            };
+
+            // Qrafik yaratmaq
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+        // Sosial Media Paylaşım funksiyaları
+        document.querySelector('.btn-facebook').addEventListener('click', function () {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        });
+
+        document.querySelector('.btn-twitter').addEventListener('click', function () {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank');
+        });
+
+        document.querySelector('.btn-whatsapp').addEventListener('click', function () {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://api.whatsapp.com/send?text=${url}`, '_blank');
+        });
+    </script>
 </body>
 
 </html>
