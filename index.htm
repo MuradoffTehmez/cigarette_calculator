@@ -4,33 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siqaret Dəyəri Hesablayıcı</title>
+    <title>Siqaret Xərclərinin Hesablanması</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <h1>Siqaret Dəyəri Hesablayıcı</h1>
-        <form id="hesabFormu">
-            <label for="gunlukSiqaret">Gündəlik çəkilən siqaret sayı:</label>
+        <h1>Siqaret Xərclərinin Hesablanması</h1>
+        <form id="calcForm">
+            <label for="gunlukSiqaret">Gündə çəkilən siqaret sayı:</label>
             <input type="number" id="gunlukSiqaret" placeholder="Məsələn: 10" required>
-            <label for="qutuQiymeti">Bir qutunun qiyməti (AZN):</label>
-            <input type="number" id="qutuQiymeti" placeholder="Məsələn: 5.50" step="0.01" required>
-            <label for="qutudakiSiqaret">Bir qutudakı siqaret sayı:</label>
-            <input type="number" id="qutudakiSiqaret" placeholder="Məsələn: 20" required>
-            <label for="muddet">Hesablama müddəti:</label>
-            <select id="muddet">
-                <option value="gun">Gün</option>
-                <option value="ay">Ay</option>
-                <option value="il">İl</option>
-            </select>
-            <button type="button" id="hesablaBtn">Hesabla</button>
+
+            <label for="siqaretQiymeti">Bir qutu siqaretin qiyməti (AZN):</label>
+            <input type="number" id="siqaretQiymeti" placeholder="Məsələn: 4" step="0.01" required>
+
+            <label for="ayliqGelir">Aylıq gəliriniz (AZN):</label>
+            <input type="number" id="ayliqGelir" placeholder="Məsələn: 500" step="0.01">
+
+            <button type="submit">Hesabla</button>
         </form>
+
         <div id="neticeler">
-            <h2>Nəticə:</h2>
-            <p id="umumiXerc">Hesablama aparılmayıb.</p>
-            <canvas id="xercQrafiki" width="400" height="200"></canvas>
+            <h2>Nəticələr</h2>
+            <p id="umumiXerc">Hesablanmış nəticə burada görünəcək.</p>
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <div id="kecmis">
+            <h2>Keçmiş Nəticələr</h2>
+            <ul id="kecmisList"></ul>
         </div>
     </div>
     <script src="script.js"></script>
