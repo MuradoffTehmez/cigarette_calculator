@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Siqaret Dəyəri Hesablayıcı</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -14,25 +15,22 @@
         <form id="hesabFormu">
             <label for="gunlukSiqaret">Gündəlik çəkilən siqaret sayı:</label>
             <input type="number" id="gunlukSiqaret" placeholder="Məsələn: 10" required>
-
             <label for="qutuQiymeti">Bir qutunun qiyməti (AZN):</label>
             <input type="number" id="qutuQiymeti" placeholder="Məsələn: 5.50" step="0.01" required>
-
             <label for="qutudakiSiqaret">Bir qutudakı siqaret sayı:</label>
             <input type="number" id="qutudakiSiqaret" placeholder="Məsələn: 20" required>
-
             <label for="muddet">Hesablama müddəti:</label>
             <select id="muddet">
                 <option value="gun">Gün</option>
                 <option value="ay">Ay</option>
                 <option value="il">İl</option>
             </select>
-
             <button type="button" id="hesablaBtn">Hesabla</button>
         </form>
         <div id="neticeler">
             <h2>Nəticə:</h2>
             <p id="umumiXerc">Hesablama aparılmayıb.</p>
+            <canvas id="xercQrafiki" width="400" height="200"></canvas>
         </div>
     </div>
     <script src="script.js"></script>
