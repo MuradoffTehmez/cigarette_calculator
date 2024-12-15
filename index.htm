@@ -1,69 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siqaret Xərcləri Hesablama</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Siqaret Xərcləri Hesablama Sistemi</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <div class="container mt-5">
-        <header class="text-center mb-4">
-            <h1 class="display-4">Siqaret Xərcləri Hesablama</h1>
-            <button id="darkModeToggle" class="btn btn-dark">Dark Mode</button>
-        </header>
+    <header>
+        <button id="dark-mode-toggle" class="dark-mode-btn">🌙</button>
+        <h1>Siqaret Xərcləri Hesablama Sistemi</h1>
+    </header>
 
-        <div class="card p-4 mb-4">
-            <h4>Hesablama Formu</h4>
-            <form id="calcForm">
-                <div class="mb-3">
-                    <label for="startDate" class="form-label">İlk Siqaretin Tarixi:</label>
-                    <input type="date" id="startDate" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="cigarettePrice" class="form-label">Bir Siqaretin Qiyməti (AZN):</label>
-                    <input type="number" id="cigarettePrice" class="form-control" placeholder="0.10" required>
-                </div>
-                <div class="mb-3">
-                    <label for="cigarettesPerDay" class="form-label">Gündəlik Siqaret Sayı:</label>
-                    <input type="number" id="cigarettesPerDay" class="form-control" placeholder="10" required>
-                </div>
-                <div class="mb-3">
-                    <label for="goal" class="form-label">Aylıq Xərc Hədəfi (AZN):</label>
-                    <input type="number" id="goal" class="form-control" placeholder="50" required>
-                </div>
-                <button type="button" class="btn btn-primary" onclick="calculate()">Hesabla</button>
-            </form>
-        </div>
-
-        <div class="card p-4 mb-4">
-            <h4>Nəticələr</h4>
-            <p><strong>Cəmi Çəkilən Siqaretlər:</strong> <span id="totalCigarettes">0</span> ədəd</p>
-            <p><strong>Toplam Xərc:</strong> <span id="totalCost">0</span> AZN</p>
-            <p><strong>Aylıq Xərc:</strong> <span id="monthlyCost">0</span> AZN</p>
-            <p><strong>İllik Xərc:</strong> <span id="yearlyCost">0</span> AZN</p>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <canvas id="cigaretteChart"></canvas>
+    <main>
+        <!-- Proqram haqqında məlumat -->
+        <section id="intro">
+            <div class="card">
+                <h4>Proqram Haqqında</h4>
+                <p>
+                    Bu proqram sizə siqaretin iqtisadi və sağlamlıq baxımından təsirlərini hesablamaq üçün nəzərdə
+                    tutulub.
+                    Siqaretlə bağlı şəxsi statistikanızı asanlıqla izləyə və sosial mediada paylaşa bilərsiniz.
+                </p>
+                <p><strong>Müəllif:</strong> Təhməz Muradov</p>
             </div>
-            <div class="col-md-6">
-                <canvas id="expenseChart"></canvas>
-            </div>
-        </div>
+        </section>
 
-        <div class="card p-4">
-            <h4>Təkliflər</h4>
-            <p id="tips">Siqareti tərgitmək həm sağlamlığınıza, həm də maliyyə vəziyyətinizə müsbət təsir göstərə bilər.
-            </p>
-            <button class="btn btn-success" onclick="shareResults()">Sosial Mediada Paylaş</button>
-        </div>
-    </div>
+        <!-- Siqaret Xərcləri Hesablama Formu -->
+        <section id="form-section">
+            <div class="card">
+                <form id="cigarette-form">
+                    <div>
+                        <label for="first-cigarette-date">Siqaret çəkməyə nə vaxt başlamısınız?</label>
+                        <input type="date" id="first-cigarette-date" class="form-control" required>
+                    </div>
+                    <div>
+                        <label for="daily-amount">Gündəlik çəkilən siqaret sayı (ədəd):</label>
+                        <input type="number" id="daily-amount" class="form-control" min="1" required>
+                    </div>
+                    <div>
+                        <label for="pack-price">Bir paçkanın qiyməti (AZN):</label>
+                        <input type="number" step="0.01" id="pack-price" class="form-control" min="0.01" required>
+                    </div>
+                    <div>
+                        <label for="health-risk">Bir siqaretin sağlamlığa təsiri (dəqiqə):</label>
+                        <input type="number" id="health-risk" class="form-control" min="0" step="1" value="11">
+                    </div>
+                    <button type="submit" id="calculate-btn">Hesabla</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Nəticələr Bölməsi -->
+        <section id="results">
+            <div class="card">
+                <h4>Nəticələr</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Statistika</th>
+                            <th>Dəyər</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+                <div id="chart-container">
+                    <canvas id="stats-chart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sosial Media Paylaşım Bölməsi -->
+        <section id="social-share">
+            <div class="card">
+                <h4>Nəticələri Paylaş</h4>
+                <p>Sosial mediada paylaşmaq üçün seçim edin:</p>
+                <button class="btn btn-facebook">Facebook</button>
+                <button class="btn btn-twitter">X</button>
+                <button class="btn btn-whatsapp">WhatsApp</button>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
