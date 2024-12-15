@@ -13,23 +13,55 @@ if (localStorage.getItem('darkMode') === 'enabled') {
 }
 
 // Form elementləri
-const form = document.querySelector('#cigarette-form');
-const resultsBody = document.querySelector('#results-body');
+const form = document.querySelector('form');
+const resultsContainer = document.querySelector('#results');
 const chartContainer = document.querySelector('#chart-container');
 const socialShare = document.querySelector('#social-share');
+
+// Yaş hesablama funksiyası
+function calculateAge(birthDate) {
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const month = today.getMonth() - birthDateObj.getMonth();
+    if (month < 0 || (month === 0 && today.getDate() < birthDateObj.getDate())) {
+        age--;
+    }
+    return age;
+}
+
+// Siqaretə başlama yaşını hesablama
+function calculateStartAge(startDate, birthDate) {
+    const start = new Date(startDate);
+    const birth = new Date(birthDate);
+    let ageAtStart = start.getFullYear() - birth.getFullYear();
+    const month = start.getMonth() - birth.getMonth();
+    if (month < 0 || (month === 0 && start.getDate() < birth.getDate())) {
+        ageAtStart--;
+    }
+    return ageAtStart;
+}
 
 // Hesablamaları aparmaq və nəticələri göstərmək üçün əsas funksiya
 form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     // Dəyərləri əldə et
-    const pricePerPack = parseFloat(document.querySelector('#price-per-pack').value);
-    const cigarettesPerDay = parseInt(document.querySelector('#cigarettes-per-day').value);
-    const startDate = new Date(document.querySelector('#start-date').value);
+    const firstName = document.querySelector('#firstName').value;
+    const lastName = document.querySelector('#lastName').value;
+    const gender = document.querySelector('#gender').value;
+    const pricePerPack = parseFloat(document.querySelector('#pricePerPack').value);
+    const cigarettesPerDay = parseInt(document.querySelector('#cigarettesPerDay').value);
+    const birthDate = document.querySelector('#birthDate').value;
+    const startDate = document.querySelector('#startDate').value;
+
+    // Yaş və başlama yaşını hesabla
+    const age = calculateAge(birthDate);
+    const startAge = calculateStartAge(startDate, birthDate);
 
     // Günü hesablama
     const today = new Date();
-    const daysSmoking = Math.ceil((today - startDate) / (1000 * 60 * 60 * 24));
+    const daysSmoking = Math.ceil((today - new Date(startDate)) / (1000 * 60 * 60 * 24));
 
     // Paket və ümumi siqaret miqdarı
     const cigarettesSmoked = daysSmoking * cigarettesPerDay;
@@ -39,11 +71,16 @@ form.addEventListener('submit', (e) => {
     const totalSpent = packsSmoked * pricePerPack;
 
     // Nəticələri göstər
-    resultsBody.innerHTML = `
-        <tr><td>Ümumi siqaret çəkilən günlər</td><td>${daysSmoking}</td></tr>
-        <tr><td>Ümumi çəkilən siqaretlər</td><td>${cigarettesSmoked.toFixed(0)} ədəd</td></tr>
-        <tr><td>Ümumi paket miqdarı</td><td>${packsSmoked.toFixed(1)} paket</td></tr>
-        <tr><td>Xərclənən ümumi məbləğ</td><td>${totalSpent.toFixed(2)} AZN</td></tr>
+    resultsContainer.innerHTML = `
+        <p><strong>Ad:</strong> ${firstName}</p>
+        <p><strong>Soyad:</strong> ${lastName}</p>
+        <p><strong>Cins:</strong> ${gender === 'male' ? 'Kişi' : gender === 'female' ? 'Qadın' : 'Digər'}</p>
+        <p><strong>Yaşınız:</strong> ${age} yaş</p>
+        <p><strong>Siqaret çəkməyə başladığınız yaş:</strong> ${startAge} yaş</p>
+        <p><strong>Ümumi siqaret çəkilən günlər:</strong> ${daysSmoking} gün</p>
+        <p><strong>Ümumi çəkilən siqaretlər:</strong> ${cigarettesSmoked.toFixed(0)} ədəd</p>
+        <p><strong>Ümumi paket miqdarı:</strong> ${packsSmoked.toFixed(1)} paket</p>
+        <p><strong>Xərclənən ümumi məbləğ:</strong> ${totalSpent.toFixed(2)} AZN</p>
     `;
 
     // Sosial paylaşım düymələrini yenilə
@@ -82,7 +119,7 @@ function shareOnWhatsApp(message) {
 
 // Qrafikləri yeniləmə funksiyası (Chart.js istifadə olunur)
 function updateChart(daysSmoking, packsSmoked, totalSpent) {
-    const ctx = document.getElementById('stats-chart').getContext('2d');
+    const ctx = document.getElementById('chart').getContext('2d');
     if (window.myChart) window.myChart.destroy(); // Əvvəlki qrafiki məhv et
 
     window.myChart = new Chart(ctx, {
