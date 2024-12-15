@@ -1,80 +1,74 @@
-// Qrafik dəyişəni
-let xercQrafiki;
+// script.js
 
-// Hesablamadan sonra qrafik qur
-document.getElementById("hesablaBtn").addEventListener("click", function () {
-  const gunlukSiqaret = parseInt(document.getElementById("gunlukSiqaret").value);
-  const qutuQiymeti = parseFloat(document.getElementById("qutuQiymeti").value);
-  const qutudakiSiqaret = parseInt(document.getElementById("qutudakiSiqaret").value);
-  const muddet = document.getElementById("muddet").value;
+document.getElementById("calcForm").addEventListener("submit", function (event) {
+  event.preventDefault();
 
-  if (!gunlukSiqaret || !qutuQiymeti || !qutudakiSiqaret) {
-    alert("Zəhmət olmasa bütün məlumatları düzgün daxil edin.");
+  // Form məlumatlarını al
+  const gunlukSiqaret = parseFloat(document.getElementById("gunlukSiqaret").value);
+  const siqaretQiymeti = parseFloat(document.getElementById("siqaretQiymeti").value);
+  const aylıqGelir = parseFloat(document.getElementById("ayliqGelir").value);
+
+  if (isNaN(gunlukSiqaret) || isNaN(siqaretQiymeti)) {
+    alert("Zəhmət olmasa bütün sahələri düzgün doldurun.");
     return;
   }
 
-  const gunlukXerc = (gunlukSiqaret * qutuQiymeti) / qutudakiSiqaret;
-
-  let umumiXerc;
-  if (muddet === "gun") {
-    umumiXerc = gunlukXerc;
-  } else if (muddet === "ay") {
-    umumiXerc = gunlukXerc * 30;
-  } else if (muddet === "il") {
-    umumiXerc = gunlukXerc * 365;
-  } else {
-    alert("Seçilmiş müddət düzgün deyil.");
-    return;
-  }
-
-  document.getElementById("umumiXerc").textContent = 
-    `Seçilmiş müddət üçün ümumi xərc: ${umumiXerc.toFixed(2)} AZN`;
-
-  // Gündəlik, aylıq və illik xərcləri hesablamaq
+  // Günlük və aylıq xərcləri hesabla
+  const gunlukXerc = (gunlukSiqaret / 20) * siqaretQiymeti;
   const aylıqXerc = gunlukXerc * 30;
-  const illikXerc = gunlukXerc * 365;
+  const illikXerc = aylıqXerc * 12;
 
-  // Mövcud qrafik varsa, məhv et
-  if (xercQrafiki) {
-    xercQrafiki.destroy();
+  // Gəlirin faizi
+  let gelirFaiz = "";
+  if (!isNaN(aylıqGelir)) {
+    const faiz = ((aylıqXerc / aylıqGelir) * 100).toFixed(2);
+    gelirFaiz = ` Bu, aylıq gəlirinizin ${faiz}% -ni təşkil edir.`;
   }
 
-  // Chart.js ilə qrafik yaratmaq
-  const ctx = document.getElementById("xercQrafiki").getContext("2d");
-  xercQrafiki = new Chart(ctx, {
-    type: "bar",
+  // Nəticələri göstər
+  const umumiXercText = `
+    Gündəlik xərclər: ${gunlukXerc.toFixed(2)} AZN.
+    Aylıq xərclər: ${aylıqXerc.toFixed(2)} AZN.
+    İllik xərclər: ${illikXerc.toFixed(2)} AZN.${gelirFaiz}
+  `;
+  document.getElementById("umumiXerc").textContent = umumiXercText;
+
+  // Keçmiş nəticələri yadda saxla
+  const kecmisXerc = JSON.parse(localStorage.getItem("kecmisXerc")) || [];
+  kecmisXerc.push({ tarix: new Date().toLocaleDateString(), xerc: aylıqXerc.toFixed(2) });
+  localStorage.setItem("kecmisXerc", JSON.stringify(kecmisXerc));
+  gosterKecmisNəticələr(kecmisXerc);
+
+  // Qrafik göstərin
+  yigilmisQrafik(aylıqXerc);
+});
+
+function gosterKecmisNəticələr(kecmisXerc) {
+  const kecmisList = document.getElementById("kecmisList");
+  kecmisList.innerHTML = kecmisXerc
+    .map(item => `<li>${item.tarix}: ${item.xerc} AZN</li>`)
+    .join("");
+}
+
+function yigilmisQrafik(aylıqXerc) {
+  const vaxtData = [1, 2, 3, 4, 5];
+  const yigilmisXerc = vaxtData.map(vaxt => vaxt * aylıqXerc);
+
+  const ctxLine = document.getElementById("lineChart").getContext("2d");
+  new Chart(ctxLine, {
+    type: "line",
     data: {
-      labels: ["Günlük", "Aylıq", "İllik"],
+      labels: vaxtData.map(m => `${m} Ay`),
       datasets: [{
-        label: "Siqaret Xərcləri (AZN)",
-        data: [gunlukXerc.toFixed(2), aylıqXerc.toFixed(2), illikXerc.toFixed(2)],
-        backgroundColor: ["#4caf50", "#ff9800", "#f44336"],
-        borderColor: ["#388e3c", "#f57c00", "#d32f2f"],
-        borderWidth: 1
+        label: "Yığılmış Xərclər (AZN)",
+        data: yigilmisXerc,
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)"
       }]
     },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: "Xərc (AZN)"
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: "Müddət"
-          }
-        }
-      },
-      plugins: {
-        legend: {
-          position: "top"
-        }
-      }
-    }
+    options: { responsive: true }
   });
-});
+}
+
+// İlk yükləmədə keçmiş nəticələri göstər
+gosterKecmisNəticələr(JSON.parse(localStorage.getItem("kecmisXerc")) || []);
