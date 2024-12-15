@@ -1,4 +1,4 @@
-// Dark mode funksiyası
+// Dark Mode funksiyası
 document.getElementById("darkModeToggle").addEventListener("click", function() {
     document.body.classList.toggle("dark-mode");
 });
@@ -19,41 +19,39 @@ function calculate() {
     let monthlyCost = totalCost / (daysSinceStart / 30);
     let yearlyCost = totalCost / (daysSinceStart / 365);
 
-    // Nəticələri ekrana yazdırmaq
+    // Nəticələri göstərmək
     document.getElementById('totalCigarettes').innerText = totalCigarettes;
     document.getElementById('totalCost').innerText = totalCost.toFixed(2) + " AZN";
     document.getElementById('monthlyCost').innerText = monthlyCost.toFixed(2) + " AZN";
     document.getElementById('yearlyCost').innerText = yearlyCost.toFixed(2) + " AZN";
 
-    // Qrafiklər üçün məlumat
+    // Qrafikləri yenilə
     updateCharts(totalCigarettes, totalCost);
 }
 
-// Qrafiklərin yenilənməsi
+// Qrafikləri yeniləmək üçün
 function updateCharts(totalCigarettes, totalCost) {
-    // Siqaret Qrafiki
-    let ctxCigarettes = document.getElementById("cigaretteChart").getContext("2d");
-    new Chart(ctxCigarettes, {
+    let ctx1 = document.getElementById('cigaretteChart').getContext('2d');
+    new Chart(ctx1, {
         type: 'bar',
         data: {
             labels: ['Çəkilən Siqaretlər'],
             datasets: [{
                 label: 'Siqaretlər',
                 data: [totalCigarettes],
-                backgroundColor: '#FF5733',
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
             }]
         },
     });
 
-    // Xərc Qrafiki
-    let ctxExpense = document.getElementById("expenseChart").getContext("2d");
-    new Chart(ctxExpense, {
+    let ctx2 = document.getElementById('expenseChart').getContext('2d');
+    new Chart(ctx2, {
         type: 'pie',
         data: {
-            labels: ['Xərclənmiş Pul'],
+            labels: ['Toplam Xərc'],
             datasets: [{
-                data: [totalCost, totalCost * 1.5],
-                backgroundColor: ['#FF5733', '#4CAF50'],
+                data: [totalCost, goal],
+                backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
             }]
         },
     });
@@ -61,7 +59,7 @@ function updateCharts(totalCigarettes, totalCost) {
 
 // Sosial Media Paylaşımı
 function shareResults() {
-    let message = `Mən, siqaret çəkməkdən xərclədiyim pulu hesabladım! Cəmi ${document.getElementById('totalCost').innerText} AZN sərf etdim.`;
+    let message = `Mən bu günə qədər ${document.getElementById('totalCost').innerText} xərcləmişəm! Siqaret çəkməkdən qazancım bu ola bilərdi!`;
     let url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
 }
