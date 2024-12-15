@@ -32,29 +32,29 @@
                 <form id="cigarette-form">
                     <label for="firstName">Ad:</label>
                     <input type="text" id="firstName" required>
-                    
+
                     <label for="lastName">Soyad:</label>
                     <input type="text" id="lastName" required>
-                    
+
                     <label for="gender">Cins:</label>
                     <select id="gender" required>
                         <option value="male">Kişi</option>
                         <option value="female">Qadın</option>
                         <option value="other">Digər</option>
                     </select>
-                    
+
                     <label for="birthDate">Doğum Tarixi:</label>
                     <input type="date" id="birthDate" required>
-                    
+
                     <label for="startDate">Siqaretə başlama Tarixi:</label>
                     <input type="date" id="startDate" required>
-                    
+
                     <label for="pricePerPack">Bir paket qiyməti (AZN):</label>
                     <input type="number" id="pricePerPack" required>
-                    
+
                     <label for="cigarettesPerDay">Gündəlik çəkilən siqaret sayı:</label>
                     <input type="number" id="cigarettesPerDay" required>
-                    
+
                     <button type="submit">Hesabla</button>
                 </form>
             </div>
@@ -82,14 +82,141 @@
             <div class="card">
                 <h4>Nəticələri Paylaş</h4>
                 <p>Sosial mediada paylaşmaq üçün seçim edin:</p>
-                <button class="btn btn-facebook">Facebook</button>
-                <button class="btn btn-twitter">X</button>
-                <button class="btn btn-whatsapp">WhatsApp</button>
+                <button class="btn btn-facebook" id="share-facebook">Facebook</button>
+                <button class="btn btn-twitter" id="share-twitter">X</button>
+                <button class="btn btn-whatsapp" id="share-whatsapp">WhatsApp</button>
             </div>
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script>
+        // Dark mode düyməsi və vəziyyəti
+        const darkModeToggle = document.querySelector('#dark-mode-toggle');
+        const body = document.body;
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+        });
+
+        // Dark mode vəziyyətini yadda saxla
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark-mode');
+        }
+
+        // Yaş hesablama funksiyası
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birthDateObj = new Date(birthDate);
+            let age = today.getFullYear() - birthDateObj.getFullYear();
+            const month = today.getMonth() - birthDateObj.getMonth();
+            if (month < 0 || (month === 0 && today.getDate() < birthDateObj.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Siqaretə başlama yaşını hesablama
+        function calculateStartAge(startDate, birthDate) {
+            const start = new Date(startDate);
+            const birth = new Date(birthDate);
+            let ageAtStart = start.getFullYear() - birth.getFullYear();
+            const month = start.getMonth() - birth.getMonth();
+            if (month < 0 || (month === 0 && start.getDate() < birth.getDate())) {
+                ageAtStart--;
+            }
+            return ageAtStart;
+        }
+
+        // Siqaret çəkilən günlər və digər hesablamalar
+        function calculateTotalExpenses(startDate, cigarettesPerDay, pricePerPack) {
+            const today = new Date();
+            const daysSmoking = Math.ceil((today - new Date(startDate)) / (1000 * 60 * 60 * 24));
+            const cigarettesSmoked = daysSmoking * cigarettesPerDay;
+            const packsSmoked = cigarettesSmoked / 20;
+            const totalSpent = packsSmoked * pricePerPack;
+
+            return { daysSmoking, cigarettesSmoked, packsSmoked, totalSpent };
+        }
+
+        // Hesablamaları aparmaq və nəticələri göstərmək üçün əsas funksiya
+        document.querySelector('#cigarette-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Dəyərləri əldə et
+            const firstName = document.querySelector('#firstName').value;
+            const lastName = document.querySelector('#lastName').value;
+            const gender = document.querySelector('#gender').value;
+            const pricePerPack = parseFloat(document.querySelector('#pricePerPack').value);
+            const cigarettesPerDay = parseInt(document.querySelector('#cigarettesPerDay').value);
+            const birthDate = document.querySelector('#birthDate').value;
+            const startDate = document.querySelector('#startDate').value;
+
+            // Yaş və başlama yaşını hesabla
+            const age = calculateAge(birthDate);
+            const startAge = calculateStartAge(startDate, birthDate);
+
+            // Siqaretə çəkilən günlər və digər hesablamalar
+            const { daysSmoking, cigarettesSmoked, packsSmoked, totalSpent } = calculateTotalExpenses(startDate, cigarettesPerDay, pricePerPack);
+
+            // Nəticələri göstər
+            const resultsBody = document.querySelector('#results-body');
+            resultsBody.innerHTML = `
+                <tr><td><strong>Ad:</strong></td><td>${firstName}</td></tr>
+                <tr><td><strong>Soyad:</strong></td><td>${lastName}</td></tr>
+                <tr><td><strong>Cins:</strong></td><td>${gender === 'male' ? 'Kişi' : gender === 'female' ? 'Qadın' : 'Digər'}</td></tr>
+                <tr><td><strong>Yaşınız:</strong></td><td>${age} yaş</td></tr>
+                <tr><td><strong>Siqaret çəkməyə başladığınız yaş:</strong></td><td>${startAge} yaş</td></tr>
+                <tr><td><strong>Ümumi siqaret çəkilən günlər:</strong></td><td>${daysSmoking} gün</td></tr>
+                <tr><td><strong>Ümumi çəkilən siqaretlər:</strong></td><td>${cigarettesSmoked}</td></tr>
+                <tr><td><strong>Ümumi paket miqdarı:</strong></td><td>${packsSmoked.toFixed(1)} paket</td></tr>
+                <tr><td><strong>Xərclənən ümumi məbləğ:</strong></td><td>${totalSpent.toFixed(2)} AZN</td></tr>
+            `;
+
+            // Qrafikləri yeniləmə
+            updateChart(daysSmoking, packsSmoked, totalSpent);
+        });
+
+        // Qrafikləri yeniləmə funksiyası
+        function updateChart(daysSmoking, packsSmoked, totalSpent) {
+            const ctx = document.getElementById('stats-chart').getContext('2d');
+            if (window.myChart) window.myChart.destroy(); // Əvvəlki qrafiki məhv et
+
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Siqaret Çəkilən Günlər', 'Paketlər', 'Xərclənən Məbləğ (AZN)'],
+                    datasets: [{
+                        label: 'Statistikalar',
+                        data: [daysSmoking, packsSmoked, totalSpent],
+                        backgroundColor: ['#4CAF50', '#FFC107', '#FF5722'],
+                        borderColor: ['#388E3C', '#FF9800', '#F44336'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sosial mediya paylaşma funksiyası
+        document.querySelector('#share-facebook').addEventListener('click', () => {
+            alert('Facebook-da paylaşmaq üçün hazır deyil.');
+        });
+
+        document.querySelector('#share-twitter').addEventListener('click', () => {
+            alert('X-də paylaşmaq üçün hazır deyil.');
+        });
+
+        document.querySelector('#share-whatsapp').addEventListener('click', () => {
+            alert('WhatsApp-da paylaşmaq üçün hazır deyil.');
+        });
+    </script>
 </body>
 
 </html>

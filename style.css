@@ -247,4 +247,15 @@ table tbody tr:hover {
     table td {
         font-size: 0.8rem;
     }
+
+    /* Sosial mediya düymələrini sıxlaşdırmaq */
+    .btn {
+        padding: 8px 12px;
+    }
+
+    .btn-facebook,
+    .btn-twitter,
+    .btn-whatsapp {
+        font-size: 0.9rem;
+    }
 }
